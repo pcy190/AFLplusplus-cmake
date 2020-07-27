@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.4)
+project(aflplusplus)
+file(GLOB DIR_SRCS "afl-fuzz*.c")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-pointer-arith  -DBIN_PATH=\\\"/usr/local/bin\\\"  -DAFL_PATH=\\\"/usr/local/lib/afl\\\" -DDOC_PATH=\\\"/usr/local/share/doc/afl\\\" ")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto ") # -static
+add_library(afl-common afl-common.c)
+add_library(afl-fork-server afl-forkserver.c)
+add_library(afl-shared-mem afl-sharedmem.c)
+add_library(afl-pp-common afl-common.c)
+add_executable(afl++ ${DIR_SRCS})
+target_link_libraries(afl++ ${CMAKE_DL_LIBS} afl-pp-common afl-fork-server afl-shared-mem)
+target_include_directories(afl-common PRIVATE include)
+target_include_directories(afl-pp-common PRIVATE include)
+target_include_directories(afl-fork-server PRIVATE include)
+target_include_directories(afl-shared-mem PRIVATE include)
+target_include_directories(afl++ PRIVATE include)
